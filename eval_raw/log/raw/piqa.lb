@@ -1,0 +1,14 @@
+nohup: ignoring input
+[2024-04-25 12:55:10,034] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+[93m [WARNING] [0m Please specify the CUTLASS repo directory as environment variable $CUTLASS_PATH
+[93m [WARNING] [0m NVIDIA Inference is only supported on Ampere and newer architectures
+[93m [WARNING] [0m sparse_attn requires a torch version >= 1.5 and < 2.0 but detected 2.1
+[93m [WARNING] [0m using untested triton version (2.1.0), only 1.0.0 is known to be compatible
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]Loading checkpoint shards:  14%|█▍        | 1/7 [00:01<00:10,  1.73s/it]Loading checkpoint shards:  29%|██▊       | 2/7 [00:03<00:08,  1.78s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:05<00:07,  1.78s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:07<00:05,  1.77s/it]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:08<00:03,  1.78s/it]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:10<00:01,  1.81s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:11<00:00,  1.58s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:11<00:00,  1.69s/it]
+Traceback (most recent call last):
+  File "/scratch0/zx22/zijie/deepseek/eval_raw/eval_raw_model.py", line 36, in <module>
+    model = PipelineModule(layers=model.to_layers(), num_stages=2)
+  File "/scratch0/zx22/zijie/miniconda3/envs/deepseek/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1695, in __getattr__
+    raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+AttributeError: 'DeepseekForCausalLM' object has no attribute 'to_layers'

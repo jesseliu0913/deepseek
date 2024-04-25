@@ -1,0 +1,9 @@
+nohup: ignoring input
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+A new version of the following files was downloaded from https://huggingface.co/deepseek-ai/deepseek-moe-16b-base:
+- configuration_deepseek.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/deepseek-ai/deepseek-moe-16b-base:
+- modeling_deepseek.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+Downloading shards:   0%|          | 0/7 [00:00<?, ?it/s]Downloading shards:  14%|█▍        | 1/7 [00:44<04:28, 44.77s/it]Downloading shards:  29%|██▊       | 2/7 [01:29<03:43, 44.68s/it]Downloading shards:  43%|████▎     | 3/7 [02:15<03:01, 45.25s/it]Downloading shards:  57%|█████▋    | 4/7 [03:00<02:16, 45.35s/it]Downloading shards:  71%|███████▏  | 5/7 [04:06<01:45, 52.52s/it]Downloading shards:  86%|████████▌ | 6/7 [04:51<00:49, 49.98s/it]Downloading shards: 100%|██████████| 7/7 [05:16<00:00, 41.99s/it]Downloading shards: 100%|██████████| 7/7 [05:16<00:00, 45.24s/it]

@@ -1,0 +1,16 @@
+nohup: ignoring input
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+Traceback (most recent call last):
+  File "/scratch0/zx22/zijie/deepseek/eval_raw_model.py", line 31, in <module>
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)
+  File "/scratch0/zx22/zijie/miniconda3/envs/deepseek/lib/python3.9/site-packages/transformers/models/auto/auto_factory.py", line 558, in from_pretrained
+    return model_class.from_pretrained(
+  File "/scratch0/zx22/zijie/miniconda3/envs/deepseek/lib/python3.9/site-packages/transformers/modeling_utils.py", line 3609, in from_pretrained
+    max_memory = get_balanced_memory(
+  File "/scratch0/zx22/zijie/miniconda3/envs/deepseek/lib/python3.9/site-packages/accelerate/utils/modeling.py", line 1029, in get_balanced_memory
+    leaves = [n for n in module_sizes if len([p for p in module_sizes if n == "" or p.startswith(n + ".")]) == 0]
+  File "/scratch0/zx22/zijie/miniconda3/envs/deepseek/lib/python3.9/site-packages/accelerate/utils/modeling.py", line 1029, in <listcomp>
+    leaves = [n for n in module_sizes if len([p for p in module_sizes if n == "" or p.startswith(n + ".")]) == 0]
+  File "/scratch0/zx22/zijie/miniconda3/envs/deepseek/lib/python3.9/site-packages/accelerate/utils/modeling.py", line 1029, in <listcomp>
+    leaves = [n for n in module_sizes if len([p for p in module_sizes if n == "" or p.startswith(n + ".")]) == 0]
+KeyboardInterrupt
