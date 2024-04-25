@@ -1,0 +1,6 @@
+nohup: ignoring input
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+/home/zx22/.local/lib/python3.8/site-packages/accelerate/utils/modeling.py:1341: UserWarning: Current model requires 48237440 bytes of buffer for offloaded layers, which seems does not fit any GPU's remaining memory. If you are experiencing a OOM later, please consider using offload_buffers=True.
+  warnings.warn(
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]Loading checkpoint shards:  14%|█▍        | 1/7 [00:00<00:05,  1.07it/s]Loading checkpoint shards:  29%|██▊       | 2/7 [00:01<00:02,  1.80it/s]Loading checkpoint shards:  43%|████▎     | 3/7 [00:01<00:01,  2.44it/s]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:01<00:01,  2.91it/s]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:01<00:00,  3.20it/s]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:02<00:00,  3.35it/s]Loading checkpoint shards: 100%|██████████| 7/7 [00:02<00:00,  3.62it/s]Loading checkpoint shards: 100%|██████████| 7/7 [00:02<00:00,  2.84it/s]
+WARNING:root:Some parameters are on the meta device device because they were offloaded to the cpu.

@@ -1,0 +1,28 @@
+nohup: ignoring input
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]Loading checkpoint shards:  14%|█▍        | 1/7 [00:00<00:05,  1.09it/s]Loading checkpoint shards:  29%|██▊       | 2/7 [00:01<00:04,  1.06it/s]Loading checkpoint shards:  43%|████▎     | 3/7 [00:02<00:04,  1.01s/it]Loading checkpoint shards:  57%|█████▋    | 4/7 [00:03<00:02,  1.01it/s]Loading checkpoint shards:  71%|███████▏  | 5/7 [00:04<00:01,  1.02it/s]Loading checkpoint shards:  86%|████████▌ | 6/7 [00:05<00:01,  1.00s/it]Loading checkpoint shards: 100%|██████████| 7/7 [00:06<00:00,  1.15it/s]Loading checkpoint shards: 100%|██████████| 7/7 [00:06<00:00,  1.07it/s]
+Traceback (most recent call last):
+  File "eval_raw_model.py", line 31, in <module>
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)
+  File "/home/zx22/.local/lib/python3.8/site-packages/transformers/models/auto/auto_factory.py", line 558, in from_pretrained
+    return model_class.from_pretrained(
+  File "/home/zx22/.local/lib/python3.8/site-packages/transformers/modeling_utils.py", line 3589, in from_pretrained
+    dispatch_model(model, **device_map_kwargs)
+  File "/home/zx22/.local/lib/python3.8/site-packages/accelerate/big_modeling.py", line 474, in dispatch_model
+    model.to(device)
+  File "/home/zx22/.local/lib/python3.8/site-packages/transformers/modeling_utils.py", line 2576, in to
+    return super().to(*args, **kwargs)
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1160, in to
+    return self._apply(convert)
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/torch/nn/modules/module.py", line 810, in _apply
+    module._apply(fn)
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/torch/nn/modules/module.py", line 810, in _apply
+    module._apply(fn)
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/torch/nn/modules/module.py", line 810, in _apply
+    module._apply(fn)
+  [Previous line repeated 2 more times]
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/torch/nn/modules/module.py", line 857, in _apply
+    self._buffers[key] = fn(buf)
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1158, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 0 has a total capacty of 39.39 GiB of which 2.56 MiB is free. Process 2466998 has 1.12 GiB memory in use. Process 4188420 has 700.00 MiB memory in use. Including non-PyTorch memory, this process has 37.15 GiB memory in use. Process 1907706 has 416.00 MiB memory in use. Of the allocated memory 30.62 GiB is allocated by PyTorch, and 6.13 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
