@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 
 model_name = "deepseek-ai/deepseek-moe-16b-base"
@@ -11,7 +12,6 @@ def flatten_2d_list(twd_list):
     return [element for od_list in twd_list for element in od_list]
 
 expert_num = 64
-import numpy as np
 
 def get_layer_output(module, input, output):
     expert_quant = flatten_2d_list(output[0])
@@ -29,13 +29,27 @@ def get_layer_output(module, input, output):
 text = "An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is"
 inputs = tokenizer(text, return_tensors="pt")
 outputs = model.generate(**inputs.to(model.device), max_new_tokens=1)
+model_raw_dict = model.state_dict()
 layer_outputs = []
 hooks = []
-for decoder_layer in model.model.layers[1:-1]:
-  hook = decoder_layer.mlp.gate.register_forward_hook(get_layer_output)
-  break
+set_layer = 1  # 1-27
+set_expert = 0  # 0-64
+for layer_index, decoder_layer in enumerate(model.model.layers[1:-1]):
+  if set_layer == layer_index:
+    decoder_layer.mlp.gate.n_routed_experts = 63
 
-result = model.generate(**inputs, max_new_tokens=1, temperature=0.0)
+model_new_dict = model.state_dict()
+
+for key in list(model_raw_dict.keys()):
+    model_new_dict[key] = model_raw_dict[key]
+
+for key in list(model_raw_dict.keys()):
+    if 'gate' in key:
+      print(key)
+
+
+
+# result = model.generate(**inputs, max_new_tokens=1, temperature=0.0)
 # full_expert_dict[idx] = layer_outputs
 
 # for hook in hooks:
