@@ -1,0 +1,24 @@
+nohup: ignoring input
+[2024-05-06 12:51:12,531] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+[93m [WARNING] [0m async_io requires the dev libaio .so object and headers but these were not found.
+[93m [WARNING] [0m async_io: please install the libaio-dev package with apt
+[93m [WARNING] [0m If libaio is already installed (perhaps from source), try setting the CFLAGS and LDFLAGS environment variables to where it can be found.
+[93m [WARNING] [0m Please specify the CUTLASS repo directory as environment variable $CUTLASS_PATH
+[93m [WARNING] [0m sparse_attn requires a torch version >= 1.5 and < 2.0 but detected 2.1
+[93m [WARNING] [0m using untested triton version (2.1.0), only 1.0.0 is known to be compatible
+Loading checkpoint shards:   0%|          | 0/7 [00:00<?, ?it/s]Loading checkpoint shards:  14%|█▍        | 1/7 [00:02<00:13,  2.25s/it]Loading checkpoint shards:  29%|██▊       | 2/7 [00:05<00:13,  2.74s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:08<00:11,  2.95s/it]Loading checkpoint shards:  43%|████▎     | 3/7 [00:08<00:11,  2.98s/it]
+Traceback (most recent call last):
+  File "eval_qd_model.py", line 37, in <module>
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/transformers/models/auto/auto_factory.py", line 558, in from_pretrained
+    return model_class.from_pretrained(
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/transformers/modeling_utils.py", line 3677, in from_pretrained
+    ) = cls._load_pretrained_model(
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/transformers/modeling_utils.py", line 4104, in _load_pretrained_model
+    new_error_msgs, offload_index, state_dict_index = _load_state_dict_into_meta_model(
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/transformers/modeling_utils.py", line 886, in _load_state_dict_into_meta_model
+    set_module_tensor_to_device(model, param_name, param_device, **set_module_kwargs)
+  File "/scratch/zx22/zijie/anaconda/envs/deepseek/lib/python3.8/site-packages/accelerate/utils/modeling.py", line 400, in set_module_tensor_to_device
+    new_value = value.to(device)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacty of 39.39 GiB of which 19.29 GiB is free. Including non-PyTorch memory, this process has 20.09 GiB memory in use. Of the allocated memory 16.40 GiB is allocated by PyTorch, and 3.29 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
