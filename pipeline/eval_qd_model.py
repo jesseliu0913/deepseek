@@ -28,7 +28,7 @@ parser.add_argument(
 parser.add_argument("type", type=str, default="1", help="input the connect number")
 parser.add_argument("--task_idx", type=int, default="1", help="input the task index")
 args = parser.parse_args()
-device = torch.device("cuda")
+device = torch.device("cuda:0")
 
 # torch.cuda.set_per_process_memory_fraction(0.5, device=0)
 # define model
@@ -38,8 +38,12 @@ model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloa
 model.generation_config = GenerationConfig.from_pretrained(model_name)
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 raw_state_dict = model.state_dict()
+model = model.cpu() 
 
-print(torch.cuda.memory_allocated())
+param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
+param_size_bytes = param_size / 1024 ** 2  # Convert to MB
+print(f"Memory occupied by parameters: {param_size_bytes} MB")
+
 
 # define dataset and input/output name
 type_name = args.dataset 
@@ -89,7 +93,8 @@ def get_expert(file_data, expert_num=8):
         max_expert = np.argmax(expert_count_list)
         max_expert_tokens = expert_count_list[max_expert]
         max_expert_lst.append(max_expert)
-
+        # print(max_expert_tokens)
+        # print(average_expert)
         gap = max_expert_tokens / average_expert
 
         layer_gap_dict[layer_index] = gap
@@ -97,7 +102,7 @@ def get_expert(file_data, expert_num=8):
     return max_expert_lst, layer_gap_dict
 
 
-expert_folder = f"/scratch/zx22/zijie/deepseek/eval_raw/resutls/raw/{folder_name}"
+expert_folder = f"/mnt/deepseek/eval_raw/resutls/raw/mmlu"
 expert_data = json.load(open(os.path.join(expert_folder, f"{output_name}.json")))
 max_expert_lst, layer_gap_dict = get_expert(expert_data)
 
@@ -198,44 +203,72 @@ class QuantDeepseekMLP(nn.Module):
 
         return down_proj
 
-
+print(max_expert_lst)
 for idx in range(0, 27):
     # module original layers list in [1, 27] total 27 layers have gates
     quant_expert = quant_lst[idx]
     duplicate_expert = max_expert_lst[idx]
     config = model.config
-
+    #gate_dict = model.model.layers[idx+1].mlp.gate.state_dict()
     model.model.layers[idx+1].mlp.gate = DuplicateMoEGate(config=config)
-    model.model.layers[idx+1].mlp.experts = nn.ModuleList([DeepseekMLP(config, intermediate_size = config.moe_intermediate_size) for i in range(config.n_routed_experts + 1)])
+    #model.model.layers[idx+1].mlp.gate.load_state_dict(gate_dict)
 
+    #expert_dict = model.model.layers[idx+1].mlp.experts.state_dict()
     hidden_size = model.model.layers[idx+1].mlp.experts[quant_expert].hidden_size
     intermediate_size = model.model.layers[idx+1].mlp.experts[quant_expert].intermediate_size
+
+    model.model.layers[idx+1].mlp.experts = nn.ModuleList([DeepseekMLP(config, intermediate_size = config.moe_intermediate_size) for i in range(config.n_routed_experts + 1)]).bfloat16()
     model.model.layers[idx+1].mlp.experts[quant_expert] = QuantDeepseekMLP(config=config, hidden_size=hidden_size, intermediate_size=intermediate_size)
     model.model.layers[idx+1].mlp.experts[64] = QuantDeepseekMLP(config=config, hidden_size=hidden_size, intermediate_size=intermediate_size)
+    #print(expert_dict)
+    #break
+
+
+    #model.model.layers[idx+1].mlp.experts[quant_expert].load_state_dict(layer_dict)
+    #model.model.layers[idx+1].mlp.experts[64].load_state_dict(layer_dict)
+    #model.model.layers[idx+1].mlp.experts[quant_expert].to(0)
+    #model.model.layers[idx+1].mlp.experts[64].to(0)
+
 
 new_state_dict = model.state_dict()
+for key in list(raw_state_dict.keys()):
+    new_state_dict[key] = raw_state_dict[key]
 
 for key_idx in range(0, 27):
     duplicate_expert = max_expert_lst[key_idx]
     layer_idx = key_idx + 1
+    
 
+    old_gate_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.gate_proj.weight"
     old_up_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.up_proj.weight"
     old_down_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.down_proj.weight"
     new_up_name = f"model.layers.{layer_idx}.mlp.experts.64.up_proj.weight"
     new_down_name = f"model.layers.{layer_idx}.mlp.experts.64.down_proj.weight"
+    new_gate_name = f"model.layers.{layer_idx}.mlp.experts.64.gate_proj.weight"
 
+    new_state_dict[new_gate_name] = raw_state_dict[old_gate_name]
     new_state_dict[new_up_name] = raw_state_dict[old_up_name]
     new_state_dict[new_down_name] = raw_state_dict[old_down_name]
 
 
+#for p in model.parameters():
+#    print("p.nelement()", p.nelement())
+#    print("p.element_size()", p.element_size())
+#    p_size = (p.nelement() * p.element_size()) / 1024 ** 2
+#    print(f"Memory occupied by parameters of the specific layer: {p_size} MB")
 
-model.load_state_dict(new_state_dict)
-model.to("cpu")
+# model.load_state_dict(new_state_dict)
+param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
+param_size_bytes = param_size / 1024 ** 2  # Convert to MB
+print(f"Memory occupied by parameters: {param_size_bytes} MB")
+
+#model.to("cpu")
+
 print(torch.cuda.memory_allocated())
 torch.cuda.empty_cache()
+model.to("cpu")
+model.to(device)
 
-# quant happens here
-model = model.to(0)
 
 text = "An"
 inputs = tokenizer(text, return_tensors="pt")
@@ -317,6 +350,6 @@ outputs = model.generate(**inputs.to(model.device), max_new_tokens=1)
 # #     json.dump(full_expert_dict, fw, indent=4)
 
 """
-CUDA_VISIBLE_DEVICES=0 nohup python eval_qd_model.py piqa none test 3 --task_idx 0 > ./log/raw/piqa.lb 2>&1 &
+CUDA_VISIBLE_DEVICES=7 nohup python eval_qd_model.py piqa none test 3 --task_idx 0 > ./log/raw/piqa.lb 2>&1 &
 """
 

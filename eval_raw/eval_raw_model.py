@@ -66,6 +66,9 @@ type_name = args.dataset
 dataset = load_dataset(args.data, type_name) if type_name != 'none' else load_dataset(args.data)
 test_data = dataset[args.subset]
 
+output_name = type_name if type_name != "none" else args.data
+output_name = output_name if "/" not in output_name else output_name.split("/")[-1]
+
 if args.type == "2":
     full_sentence = []
     for q, s in zip(test_data[args.sub_one], test_data[args.sub_two]):
@@ -80,8 +83,10 @@ elif args.type == "3":
     for q, s, z in zip(
         test_data[args.sub_one], test_data[args.sub_two], test_data[args.sub_three]
     ):
-        # prompt = q + " ".join(s["choices"]) + " ".join(z["choices"])
-        prompt = q + s + z
+        if output_name == "multiple_choice":
+            prompt = q + " ".join(s['choices']) + " ".join(z['choices'])
+        else:
+            prompt = q + s + z
         full_sentence.append(prompt)
 
 
@@ -96,7 +101,7 @@ with torch.no_grad():
         inputs = inputs.to(device)
         layer_outputs = []
         hooks = []
-        for decoder_layer in model.model.layers[1:-1]:
+        for decoder_layer in model.model.layers[1:]:
             hook = decoder_layer.mlp.gate.register_forward_hook(
                 get_layer_output
             )
@@ -113,7 +118,7 @@ output_name = type_name if type_name != "none" else args.data
 output_name = output_name if "/" not in output_name else output_name.split("/")[-1]
 
 with open(
-    f"/scratch0/zx22/zijie/deepseek/results/raw/glue/{output_name}.json", "w"
+    f"/mnt/deepseek/eval_raw/resutls/raw/mmlu/{output_name}.json", "w"
 ) as fw:
     json.dump(full_expert_dict, fw, indent=4)
 

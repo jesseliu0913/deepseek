@@ -1,0 +1,11 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "/mnt/deepseek/pipeline/load_model.py", line 3, in <module>
+    model = torch.load('model.pth')
+  File "/root/anaconda3/envs/deepseek/lib/python3.10/site-packages/torch/serialization.py", line 1025, in load
+    return _load(opened_zipfile,
+  File "/root/anaconda3/envs/deepseek/lib/python3.10/site-packages/torch/serialization.py", line 1446, in _load
+    result = unpickler.load()
+  File "/root/anaconda3/envs/deepseek/lib/python3.10/site-packages/torch/serialization.py", line 1439, in find_class
+    return super().find_class(mod_name, name)
+ModuleNotFoundError: No module named 'transformers_modules'
