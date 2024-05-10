@@ -209,11 +209,11 @@ for idx in range(0, 27):
     quant_expert = quant_lst[idx]
     duplicate_expert = max_expert_lst[idx]
     config = model.config
-    #gate_dict = model.model.layers[idx+1].mlp.gate.state_dict()
+    # gate_dict = model.model.layers[idx+1].mlp.gate.state_dict()
     model.model.layers[idx+1].mlp.gate = DuplicateMoEGate(config=config)
-    #model.model.layers[idx+1].mlp.gate.load_state_dict(gate_dict)
+    # model.model.layers[idx+1].mlp.gate.load_state_dict(gate_dict)
 
-    #expert_dict = model.model.layers[idx+1].mlp.experts.state_dict()
+    expert_dict = model.model.layers[idx+1].mlp.experts.state_dict()
     hidden_size = model.model.layers[idx+1].mlp.experts[quant_expert].hidden_size
     intermediate_size = model.model.layers[idx+1].mlp.experts[quant_expert].intermediate_size
 
@@ -224,33 +224,34 @@ for idx in range(0, 27):
     #break
 
 
-    #model.model.layers[idx+1].mlp.experts[quant_expert].load_state_dict(layer_dict)
-    #model.model.layers[idx+1].mlp.experts[64].load_state_dict(layer_dict)
-    #model.model.layers[idx+1].mlp.experts[quant_expert].to(0)
-    #model.model.layers[idx+1].mlp.experts[64].to(0)
+    model.model.layers[idx+1].mlp.experts[quant_expert].load_state_dict(layer_dict)
+    model.model.layers[idx+1].mlp.experts[64].load_state_dict(layer_dict)
+    model.model.layers[idx+1].mlp.experts[quant_expert].to(0)
+    model.model.layers[idx+1].mlp.experts[64].to(0)
 
 
 new_state_dict = model.state_dict()
-for key in list(raw_state_dict.keys()):
-    new_state_dict[key] = raw_state_dict[key]
 
+duplicate_keyname = []
 for key_idx in range(0, 27):
     duplicate_expert = max_expert_lst[key_idx]
     layer_idx = key_idx + 1
     
+    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.gate_proj.weight")
+    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.up_proj.weight")
+    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.down_proj.weight")
+    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.64.up_proj.weight")
+    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.64.down_proj.weight")
+    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.64.gate_proj.weight")
 
-    old_gate_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.gate_proj.weight"
-    old_up_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.up_proj.weight"
-    old_down_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.down_proj.weight"
-    new_up_name = f"model.layers.{layer_idx}.mlp.experts.64.up_proj.weight"
-    new_down_name = f"model.layers.{layer_idx}.mlp.experts.64.down_proj.weight"
-    new_gate_name = f"model.layers.{layer_idx}.mlp.experts.64.gate_proj.weight"
+    # new_state_dict[new_gate_name] = raw_state_dict[old_gate_name]
+    # new_state_dict[new_up_name] = raw_state_dict[old_up_name]
+    # new_state_dict[new_down_name] = raw_state_dict[old_down_name]
 
-    new_state_dict[new_gate_name] = raw_state_dict[old_gate_name]
-    new_state_dict[new_up_name] = raw_state_dict[old_up_name]
-    new_state_dict[new_down_name] = raw_state_dict[old_down_name]
-
-
+for key in list(raw_state_dict.keys()):
+    if key not in duplicate_keyname:
+        new_state_dict[key] = raw_state_dict[key]
+        
 #for p in model.parameters():
 #    print("p.nelement()", p.nelement())
 #    print("p.element_size()", p.element_size())
