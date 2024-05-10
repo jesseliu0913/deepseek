@@ -34,3 +34,5 @@ print(model.device())
 param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
 param_size_bytes = param_size / 1024 ** 2  # Convert to MB
 print(f"Memory occupied by parameters: {param_size_bytes} MB")
+
+print(torch.cuda.memory_allocated())
