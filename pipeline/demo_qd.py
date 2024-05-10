@@ -1,0 +1,36 @@
+import torch
+import json
+import os
+import math
+import argparse
+import numpy as np
+import torch.nn as nn
+import torch.nn.functional as F
+
+import bitsandbytes as bnb
+from bitsandbytes.nn import Linear4bit, Linear8bitLt
+
+from transformers.activations import ACT2FN
+
+from datasets import load_dataset
+from deepspeed.pipe import PipelineModule
+from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
+from torch.utils.data import DataLoader, Dataset, random_split
+from modeling_deepseek import DeepseekMLP
+
+
+device = torch.device("cuda:0")
+
+
+model_name = "deepseek-ai/deepseek-moe-16b-base"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)
+model.generation_config = GenerationConfig.from_pretrained(model_name)
+model.generation_config.pad_token_id = model.generation_config.eos_token_id
+raw_state_dict = model.state_dict()
+model = model.cpu() 
+print(model.device())
+
+param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
+param_size_bytes = param_size / 1024 ** 2  # Convert to MB
+print(f"Memory occupied by parameters: {param_size_bytes} MB")
