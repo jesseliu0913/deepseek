@@ -232,25 +232,28 @@ for idx in range(0, 27):
 
 new_state_dict = model.state_dict()
 
+for key in list(raw_state_dict.keys()):
+    new_state_dict[key] = raw_state_dict[key]
+
 duplicate_keyname = []
 for key_idx in range(0, 27):
     duplicate_expert = max_expert_lst[key_idx]
     layer_idx = key_idx + 1
     
-    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.gate_proj.weight")
-    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.up_proj.weight")
-    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.down_proj.weight")
-    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.64.up_proj.weight")
-    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.64.down_proj.weight")
-    duplicate_keyname.append(f"model.layers.{layer_idx}.mlp.experts.64.gate_proj.weight")
+    old_gate_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.gate_proj.weight"
+    old_up_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.up_proj.weight"
+    old_down_name = f"model.layers.{layer_idx}.mlp.experts.{duplicate_expert}.down_proj.weight"
 
-    # new_state_dict[new_gate_name] = raw_state_dict[old_gate_name]
-    # new_state_dict[new_up_name] = raw_state_dict[old_up_name]
-    # new_state_dict[new_down_name] = raw_state_dict[old_down_name]
+    new_gate_name = f"model.layers.{layer_idx}.mlp.experts.64.gate_proj.weight"
+    new_up_name = f"model.layers.{layer_idx}.mlp.experts.64.up_proj.weight"
+    new_down_name = f"model.layers.{layer_idx}.mlp.experts.64.down_proj.weight"
+    
 
-for key in list(raw_state_dict.keys()):
-    if key not in duplicate_keyname:
-        new_state_dict[key] = raw_state_dict[key]
+    new_state_dict[new_gate_name] = raw_state_dict[old_gate_name]
+    new_state_dict[new_up_name] = raw_state_dict[old_up_name]
+    new_state_dict[new_down_name] = raw_state_dict[old_down_name]
+
+
         
 #for p in model.parameters():
 #    print("p.nelement()", p.nelement())
@@ -270,9 +273,9 @@ for key in list(raw_state_dict.keys()):
 # model.to("cpu")
 # model.to(device)
 
-for param_name, param in model.named_parameters():
-    if "experts" in param_name:
-        print(param_name, param.dtype)
+# for param_name, param in model.named_parameters():
+#     if "experts" in param_name:
+#         print(param_name, param.dtype)
 
 
 text = "An"
