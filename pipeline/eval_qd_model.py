@@ -259,16 +259,20 @@ for key in list(raw_state_dict.keys()):
 #    print(f"Memory occupied by parameters of the specific layer: {p_size} MB")
 
 # model.load_state_dict(new_state_dict)
-param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
-param_size_bytes = param_size / 1024 ** 2  # Convert to MB
-print(f"Memory occupied by parameters: {param_size_bytes} MB")
+# param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
+# param_size_bytes = param_size / 1024 ** 2  # Convert to MB
+# print(f"Memory occupied by parameters: {param_size_bytes} MB")
 
-#model.to("cpu")
+# #model.to("cpu")
 
-print(torch.cuda.memory_allocated())
-torch.cuda.empty_cache()
-model.to("cpu")
-model.to(device)
+# print(torch.cuda.memory_allocated())
+# torch.cuda.empty_cache()
+# model.to("cpu")
+# model.to(device)
+
+for param_name, param in model.named_parameters():
+    if "experts" in param_name:
+        print(param_name, param.dtype)
 
 
 text = "An"
