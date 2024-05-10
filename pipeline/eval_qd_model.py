@@ -122,7 +122,7 @@ class DuplicateMoEGate(nn.Module):
         # topk selection algorithm
         self.norm_topk_prob = config.norm_topk_prob
         self.gating_dim = config.hidden_size
-        self.weight = nn.Parameter(torch.empty((self.n_routed_experts, self.gating_dim)))
+        self.weight = nn.Parameter(torch.empty((self.n_routed_experts, self.gating_dim), dtype=torch.bfloat16))
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
@@ -130,7 +130,6 @@ class DuplicateMoEGate(nn.Module):
         init.kaiming_uniform_(self.weight, a=math.sqrt(5))
     
     def forward(self, hidden_states):
-        self.weight = self.weight.to(dtype=torch.bfloat16)
         bsz, seq_len, h = hidden_states.shape        
         ### compute gating score
         hidden_states = hidden_states.view(-1, h)
