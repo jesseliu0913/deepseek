@@ -213,7 +213,7 @@ for idx in range(0, 27):
     model.model.layers[idx+1].mlp.gate = DuplicateMoEGate(config=config)
     # model.model.layers[idx+1].mlp.gate.load_state_dict(gate_dict)
 
-    expert_dict = model.model.layers[idx+1].mlp.experts.state_dict()
+    layer_dict = model.model.layers[idx+1].mlp.experts[quant_expert].state_dict()
     hidden_size = model.model.layers[idx+1].mlp.experts[quant_expert].hidden_size
     intermediate_size = model.model.layers[idx+1].mlp.experts[quant_expert].intermediate_size
 
