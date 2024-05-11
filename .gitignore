@@ -2,3 +2,4 @@ results/
 eval_raw/results/
 cal_important/resutls/
 pipeline/__pycache__/
+pipeline/results/

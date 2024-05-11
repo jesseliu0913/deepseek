@@ -1,0 +1,119 @@
+[33mcommit 48aac49cab25c25238ac729711510d8e01ad5b0e[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: Jesse Liu <jesseliu2000@gmail.com>
+Date:   Sat May 11 01:39:04 2024 +0000
+
+    modify
+
+[33mcommit 2e74c96384d8d3175337b8206045cc0763e799dc[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 20:10:15 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit 85e21f3bcb536df6d3c33307fca912640d286fc6[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 19:51:52 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit bf5ac5bed9ecd854535d4967ce1090759b586d06[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 19:50:04 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit b42f9eb331efcd28ebadf8cbfe4a8fa233b9f923[m
+Author: Jesse Liu <jesseliu2000@gmail.com>
+Date:   Sat May 11 00:26:37 2024 +0000
+
+    fixed cuda memory in qd
+
+[33mcommit bf83a832ffefae285bbc4c15dba11e08ed4858e5[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 17:49:37 2024 -0500
+
+    Update demo_qd.py
+
+[33mcommit 8f44f5044b648bb50eb94a3c09868f0d81673ab6[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 17:48:58 2024 -0500
+
+    Create demo_qd.py
+
+[33mcommit 9d2c490279f0516b18db40c88ea538edc4c204d5[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 17:48:18 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit ca95deddec29de506b3748e2a88c420fb54dc8a0[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 17:46:50 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit d56705f297f0b31cfef698bc5909b4c14e866845[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 17:33:18 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit 3632f003c810f3373d13bece95f86c15b455bd68[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 16:46:54 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit a8be82083bcb59e35c46a6c882f62514d658f4da[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 16:37:40 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit ef56d76f7f5b1ab69a5d5daddf0430ef27c67ad2[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 16:36:40 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit 8e0e2fc77ea8b831c31440b8501e3e9d81a0c69e[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 16:33:31 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit 8a3587bd610b48711d8754fd4d1f8231d0acefd2[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Fri May 10 16:30:20 2024 -0500
+
+    Update eval_qd_model.py
+
+[33mcommit 369325dc2804ad4ef36c46957faae14a714c5c3e[m
+Author: Jesse Liu <jesseliu2000@gmail.com>
+Date:   Fri May 10 21:24:47 2024 +0000
+
+    qd
+
+[33mcommit 9130e0b8d06c9c54717b5dc1e3c75110fae7276f[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Mon May 6 14:38:27 2024 -0500
+
+    Add files via upload
+
+[33mcommit 97577a8e085e8e0e369ff8dfa629b942e0fc2414[m
+Author: jesseLiu2000 <jesseliu2000@gmail.com>
+Date:   Thu Apr 25 13:20:38 2024 -0500
+
+    init
+
+[33mcommit 793585e9be8daf2feb712318981d8d5fb712a627[m[33m ([m[1;31morigin/a100[m[33m)[m
+Author: jesseLiu2000 <jesseliu2000@gmail.com>
+Date:   Wed Apr 24 21:37:42 2024 -0500
+
+    init
+
+[33mcommit fe50bb7ede3471e6f2f0b8c4f90afbc407da0d86[m
+Author: Jesse Liu <112784299+jesseLiu2000@users.noreply.github.com>
+Date:   Wed Apr 24 22:35:01 2024 -0400
+
+    Initial commit
