@@ -3,7 +3,10 @@ import numpy as np
 import json
 
 
-def get_expert(file_data, expert_num=8):
+def flatten_2d_list(twd_list):
+    return [element for od_list in twd_list for element in od_list]
+
+def get_expert(file_data, expert_num=64):
     layer_gap_dict = {}
     max_expert_lst = []
     layer_full_lst = [[] for idx in range(27)]
@@ -37,5 +40,5 @@ files = os.listdir(folder_path)
 print(files)
 for file in files:
   json_data = json.load(open(os.path.join(folder_path, file), "r"))
-  layer_gap_dict = get_expert(json_data, expert_num=8)
+  layer_gap_dict = get_expert(json_data, expert_num=64)
   print(np.means(np.array(list(layer_gap_dict.values))))
