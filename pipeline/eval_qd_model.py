@@ -124,6 +124,7 @@ class DuplicateMoEGate(nn.Module):
         self.gating_dim = config.hidden_size
         self.weight = nn.Parameter(torch.empty((self.n_routed_experts, self.gating_dim), dtype=torch.bfloat16))
         self.reset_parameters()
+        self.max_expert = 0
 
     def reset_parameters(self) -> None:
         import torch.nn.init  as init
@@ -140,9 +141,18 @@ class DuplicateMoEGate(nn.Module):
             raise NotImplementedError(f'insupportable scoring function for MoE gating: {self.scoring_func}')
         
         ### select top-k experts
+        
         topk_weight, topk_idx = torch.topk(scores, k=self.top_k, dim=-1, sorted=False)
-        print(topk_idx)
-        print(topk_idx.shape)
+
+        target_value = 64
+        mask = (topk_idx == self.max_expert) | (topk_idx == target_value)
+        random_choices = torch.randint(0, 2, size=topk_idx.shape, device=topk_idx.device)
+        replacement_values = torch.where(random_choices == 0, torch.tensor(self.max_expert, device=topk_idx.device),
+                                         torch.tensor(target_value, device=topk_idx.device))
+
+        topk_idx = torch.where(mask, replacement_values, topk_idx)
+
+                
         ### norm gate to sum 1
         if self.top_k > 1 and self.norm_topk_prob:
             denominator = topk_weight.sum(dim=-1, keepdim=True) + 1e-20
