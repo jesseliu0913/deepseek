@@ -112,6 +112,8 @@ def get_expert(file_data, expert_num=64):
 expert_folder = f"/mnt/deepseek/eval_raw/results/raw/mmlu"
 expert_data = json.load(open(os.path.join(expert_folder, f"{output_name}.json")))
 max_expert_lst, layer_gap_dict = get_expert(expert_data)
+print(layer_gap_dict)
+print(np.mean(np.array(list(layer_gap_dict.values()))))
 
 
 # Duplicate and Quant
