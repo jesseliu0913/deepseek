@@ -34,7 +34,7 @@ device = torch.device("cuda:0")
 # define model
 model_name = "deepseek-ai/deepseek-moe-16b-base"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16,  trust_remote_code=True)
 model.generation_config = GenerationConfig.from_pretrained(model_name)
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 raw_state_dict = model.state_dict()
@@ -141,6 +141,7 @@ class DuplicateMoEGate(nn.Module):
         
         ### select top-k experts
         topk_weight, topk_idx = torch.topk(scores, k=self.top_k, dim=-1, sorted=False)
+        print(topk_idx)
         print(topk_idx.shape)
         ### norm gate to sum 1
         if self.top_k > 1 and self.norm_topk_prob:
@@ -261,17 +262,17 @@ for key_idx in range(0, 27):
 #    p_size = (p.nelement() * p.element_size()) / 1024 ** 2
 #    print(f"Memory occupied by parameters of the specific layer: {p_size} MB")
 
-# model.load_state_dict(new_state_dict)
+model.load_state_dict(new_state_dict)
 # param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
 # param_size_bytes = param_size / 1024 ** 2  # Convert to MB
 # print(f"Memory occupied by parameters: {param_size_bytes} MB")
 
 # #model.to("cpu")
 
-# print(torch.cuda.memory_allocated())
-# torch.cuda.empty_cache()
+print(torch.cuda.memory_allocated())
+torch.cuda.empty_cache()
 # model.to("cpu")
-# model.to(device)
+model.to(device)
 
 # for param_name, param in model.named_parameters():
 #     if "experts" in param_name:
