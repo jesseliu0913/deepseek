@@ -296,11 +296,11 @@ elif args.type == "1":
     
 elif args.type == "3":
     full_sentence = []
-    for q, s, z in zip(
-        test_data[args.sub_one], test_data[args.sub_two], test_data[args.sub_three]
-    ):
-        # prompt = q + " ".join(s["choices"]) + " ".join(z["choices"])
-        prompt = q + s + z
+    for q, s, z in zip(test_data[args.sub_one], test_data[args.sub_two], test_data[args.sub_three]):
+        if output_name == "multiple_choice":
+            prompt = q + " ".join(s['choices']) + " ".join(z['choices'])
+        else:
+            prompt = q + s + z
         full_sentence.append(prompt)
 
 
@@ -329,9 +329,7 @@ with torch.no_grad():
 
 
 
-with open(
-    f"/scratch/zx22/zijie/deepseek/eval_raw/resutls/raw/mmlu/{output_name}.json", "w"
-) as fw:
+with open(f"/mnt/deepseek/pipeline/results/other/{output_name}.json", "w") as fw:
     json.dump(full_expert_dict, fw, indent=4)
 
 """
