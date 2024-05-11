@@ -78,7 +78,7 @@ def flatten_2d_list(twd_list):
 
 
 # get expert info -- which experts need to duplicate
-def get_expert(file_data, expert_num=8):
+def get_expert(file_data, expert_num=64):
     layer_gap_dict = {}
     max_expert_lst = []
     layer_full_lst = [[] for idx in range(27)]
