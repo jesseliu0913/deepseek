@@ -216,7 +216,7 @@ class QuantDeepseekMLP(nn.Module):
 for idx in range(0, 27):
     # module original layers list in [1, 27] total 27 layers have gates
     quant_expert = int(quant_lst[idx])
-    duplicate_expert = int( max_expert_lst[idx])
+    duplicate_expert = int(max_expert_lst[idx])
     config = model.config
     
     model.model.layers[idx+1].mlp.gate = DuplicateMoEGate(config=config)
