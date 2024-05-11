@@ -32,7 +32,7 @@ def get_expert(file_data, expert_num=8):
         layer_gap_dict[layer_index] = gap
     return layer_gap_dict
 
-folder_path = "/mnt/deepseek/pipeline/results"
+folder_path = "/mnt/deepseek/pipeline/results/other"
 files = os.listdir(folder_path)
 print(files)
 for file in files:
