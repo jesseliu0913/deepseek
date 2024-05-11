@@ -142,8 +142,7 @@ class DuplicateMoEGate(nn.Module):
         else:
             raise NotImplementedError(f'insupportable scoring function for MoE gating: {self.scoring_func}')
         
-        ### select top-k experts
-        
+        ### select top-k experts 
         topk_weight, topk_idx = torch.topk(scores, k=self.top_k, dim=-1, sorted=False)
                 
         ### norm gate to sum 1
@@ -219,32 +218,23 @@ class QuantDeepseekMLP(nn.Module):
 
         return down_proj
 
-print(max_expert_lst)
+
 for idx in range(0, 27):
     # module original layers list in [1, 27] total 27 layers have gates
     quant_expert = int(quant_lst[idx])
     duplicate_expert = int( max_expert_lst[idx])
     config = model.config
-    # gate_dict = model.model.layers[idx+1].mlp.gate.state_dict()
+    
     model.model.layers[idx+1].mlp.gate = DuplicateMoEGate(config=config)
     model.model.layers[idx+1].mlp.gate.max_expert = duplicate_expert
-    # model.model.layers[idx+1].mlp.gate.load_state_dict(gate_dict)
+    
 
-    # layer_dict = model.model.layers[idx+1].mlp.experts[quant_expert].state_dict()
     hidden_size = model.model.layers[idx+1].mlp.experts[quant_expert].hidden_size
     intermediate_size = model.model.layers[idx+1].mlp.experts[quant_expert].intermediate_size
 
     model.model.layers[idx+1].mlp.experts = nn.ModuleList([DeepseekMLP(config, intermediate_size = config.moe_intermediate_size) for i in range(config.n_routed_experts + 1)]).bfloat16()
     model.model.layers[idx+1].mlp.experts[quant_expert] = QuantDeepseekMLP(config=config, hidden_size=hidden_size, intermediate_size=intermediate_size)
     model.model.layers[idx+1].mlp.experts[64] = QuantDeepseekMLP(config=config, hidden_size=hidden_size, intermediate_size=intermediate_size)
-    #print(expert_dict)
-    #break
-
-
-    # model.model.layers[idx+1].mlp.experts[quant_expert].load_state_dict(layer_dict)
-    # model.model.layers[idx+1].mlp.experts[64].load_state_dict(layer_dict)
-    # model.model.layers[idx+1].mlp.experts[quant_expert].to(0)
-    # model.model.layers[idx+1].mlp.experts[64].to(0)
 
 
 new_state_dict = model.state_dict()
@@ -271,33 +261,9 @@ for key_idx in range(0, 27):
     new_state_dict[new_down_name] = raw_state_dict[old_down_name]
 
 
-        
-#for p in model.parameters():
-#    print("p.nelement()", p.nelement())
-#    print("p.element_size()", p.element_size())
-#    p_size = (p.nelement() * p.element_size()) / 1024 ** 2
-#    print(f"Memory occupied by parameters of the specific layer: {p_size} MB")
-
 model.load_state_dict(new_state_dict)
-# param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
-# param_size_bytes = param_size / 1024 ** 2  # Convert to MB
-# print(f"Memory occupied by parameters: {param_size_bytes} MB")
-
-# #model.to("cpu")
-
-print(torch.cuda.memory_allocated())
 torch.cuda.empty_cache()
-# model.to("cpu")
 model.to(device)
-
-# for param_name, param in model.named_parameters():
-#     if "experts" in param_name:
-#         print(param_name, param.dtype)
-
-
-text = "An"
-inputs = tokenizer(text, return_tensors="pt")
-outputs = model.generate(**inputs.to(model.device), max_new_tokens=1)
 
 
 # class GLUEDataset(Dataset):
