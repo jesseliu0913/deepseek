@@ -144,6 +144,7 @@ class DuplicateMoEGate(nn.Module):
         
         topk_weight, topk_idx = torch.topk(scores, k=self.top_k, dim=-1, sorted=False)
 
+        print("self.max_expert", self.max_expert)
         print("previous", topk_idx)
         target_value = 64
         mask = (topk_idx == self.max_expert) | (topk_idx == target_value)
@@ -218,11 +219,12 @@ class QuantDeepseekMLP(nn.Module):
 print(max_expert_lst)
 for idx in range(0, 27):
     # module original layers list in [1, 27] total 27 layers have gates
-    quant_expert = quant_lst[idx]
-    duplicate_expert = max_expert_lst[idx]
+    quant_expert = int(quant_lst[idx])
+    duplicate_expert = int( max_expert_lst[idx])
     config = model.config
     # gate_dict = model.model.layers[idx+1].mlp.gate.state_dict()
     model.model.layers[idx+1].mlp.gate = DuplicateMoEGate(config=config)
+    model.model.layers[idx+1].mlp.gate.max_expert = duplicate_expert
     # model.model.layers[idx+1].mlp.gate.load_state_dict(gate_dict)
 
     # layer_dict = model.model.layers[idx+1].mlp.experts[quant_expert].state_dict()
