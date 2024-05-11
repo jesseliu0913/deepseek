@@ -143,17 +143,6 @@ class DuplicateMoEGate(nn.Module):
         ### select top-k experts
         
         topk_weight, topk_idx = torch.topk(scores, k=self.top_k, dim=-1, sorted=False)
-
-        print("self.max_expert", self.max_expert)
-        print("previous", topk_idx)
-        target_value = 64
-        mask = (topk_idx == self.max_expert) | (topk_idx == target_value)
-        random_choices = torch.randint(0, 2, size=topk_idx.shape, device=topk_idx.device)
-        replacement_values = torch.where(random_choices == 0, torch.tensor(self.max_expert, device=topk_idx.device),
-                                         torch.tensor(target_value, device=topk_idx.device))
-
-        topk_idx = torch.where(mask, replacement_values, topk_idx)
-        print("after", topk_idx)
                 
         ### norm gate to sum 1
         if self.top_k > 1 and self.norm_topk_prob:
@@ -179,6 +168,18 @@ class DuplicateMoEGate(nn.Module):
                 aux_loss = (Pi * fi).sum() * self.alpha
         else:
             aux_loss = None
+
+        print("self.max_expert", self.max_expert)
+        print("previous", topk_idx)
+        target_value = 64
+        mask = (topk_idx == self.max_expert) | (topk_idx == target_value)
+        random_choices = torch.randint(0, 2, size=topk_idx.shape, device=topk_idx.device)
+        replacement_values = torch.where(random_choices == 0, torch.tensor(self.max_expert, device=topk_idx.device),
+                                         torch.tensor(target_value, device=topk_idx.device))
+
+        topk_idx = torch.where(mask, replacement_values, topk_idx)
+        print("after", topk_idx)
+        
         return topk_idx, topk_weight, aux_loss
 
 class QuantDeepseekMLP(nn.Module):
