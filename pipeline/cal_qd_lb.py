@@ -34,6 +34,7 @@ def get_expert(file_data, expert_num=8):
 
 folder_path = "/mnt/deepseek/pipeline/results"
 files = os.listdir(folder_path)
+print(files)
 for file in files:
   json_data = json.load(open(os.path.join(folder_path, file), "r"))
   layer_gap_dict = get_expert(json_data, expert_num=8)
