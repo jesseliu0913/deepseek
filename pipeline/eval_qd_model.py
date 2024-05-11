@@ -40,10 +40,6 @@ model.generation_config.pad_token_id = model.generation_config.eos_token_id
 raw_state_dict = model.state_dict()
 model = model.cpu() 
 
-param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
-param_size_bytes = param_size / 1024 ** 2  # Convert to MB
-print(f"Memory occupied by parameters: {param_size_bytes} MB")
-
 
 # define dataset and input/output name
 type_name = args.dataset 
@@ -170,8 +166,7 @@ class DuplicateMoEGate(nn.Module):
         else:
             aux_loss = None
 
-        print("self.max_expert", self.max_expert)
-        print("previous", topk_idx)
+
         target_value = 64
         mask = (topk_idx == self.max_expert) | (topk_idx == target_value)
         random_choices = torch.randint(0, 2, size=topk_idx.shape, device=topk_idx.device)
@@ -179,7 +174,6 @@ class DuplicateMoEGate(nn.Module):
                                          torch.tensor(target_value, device=topk_idx.device))
 
         topk_idx = torch.where(mask, replacement_values, topk_idx)
-        print("after", topk_idx)
         
         return topk_idx, topk_weight, aux_loss
 
@@ -266,79 +260,79 @@ torch.cuda.empty_cache()
 model.to(device)
 
 
-# class GLUEDataset(Dataset):
-#     def __init__(self, sequences):
-#         self.sequences = sequences
+class GLUEDataset(Dataset):
+    def __init__(self, sequences):
+        self.sequences = sequences
 
-#     def __len__(self):
-#         return len(self.sequences)
+    def __len__(self):
+        return len(self.sequences)
 
-#     def __getitem__(self, idx):
-#         sequences = self.sequences[idx]
-#         return sequences
-
-
-# def collate_fn(batch):
-#     """Define the collate function for dataloader"""
-#     sequences = batch
-#     inputs = tokenizer(sequences, return_tensors="pt")
-#     return inputs
+    def __getitem__(self, idx):
+        sequences = self.sequences[idx]
+        return sequences
 
 
-# def get_layer_output(module, input, output):
-#     expert_idx = output[0].detach().cpu().tolist()
-#     layer_outputs.append(expert_idx)
+def collate_fn(batch):
+    """Define the collate function for dataloader"""
+    sequences = batch
+    inputs = tokenizer(sequences, return_tensors="pt")
+    return inputs
+
+
+def get_layer_output(module, input, output):
+    expert_idx = output[0].detach().cpu().tolist()
+    layer_outputs.append(expert_idx)
 
 
 
-# if args.type == "2":
-#     full_sentence = []
-#     for q, s in zip(test_data[args.sub_one], test_data[args.sub_two]):
-#         prompt = q + s
-#         full_sentence.append(prompt)
+if args.type == "2":
+    full_sentence = []
+    for q, s in zip(test_data[args.sub_one], test_data[args.sub_two]):
+        prompt = q + s
+        full_sentence.append(prompt)
 
-# elif args.type == "1":
-#     full_sentence = test_data[args.sub_one]
+elif args.type == "1":
+    full_sentence = test_data[args.sub_one]
     
-# elif args.type == "3":
-#     full_sentence = []
-#     for q, s, z in zip(
-#         test_data[args.sub_one], test_data[args.sub_two], test_data[args.sub_three]
-#     ):
-#         # prompt = q + " ".join(s["choices"]) + " ".join(z["choices"])
-#         prompt = q + s + z
-#         full_sentence.append(prompt)
+elif args.type == "3":
+    full_sentence = []
+    for q, s, z in zip(
+        test_data[args.sub_one], test_data[args.sub_two], test_data[args.sub_three]
+    ):
+        # prompt = q + " ".join(s["choices"]) + " ".join(z["choices"])
+        prompt = q + s + z
+        full_sentence.append(prompt)
 
 
-# ax_dataset = GLUEDataset(full_sentence)
-# ax_dataloader = DataLoader(
-#     ax_dataset, batch_size=1, shuffle=False, collate_fn=collate_fn
-# )
+ax_dataset = GLUEDataset(full_sentence)
+ax_dataloader = DataLoader(
+    ax_dataset, batch_size=1, shuffle=False, collate_fn=collate_fn
+)
 
-# full_expert_dict = {}
-# with torch.no_grad():
-#     for idx, inputs in enumerate(ax_dataloader):
-#         inputs = inputs.to(device)
-#         layer_outputs = []
-#         hooks = []
-#         for decoder_layer in model.model.layers[1:-1]:
-#             hook = decoder_layer.mlp.gate.register_forward_hook(
-#                 get_layer_output
-#             )
-#             hooks.append(hook)
+full_expert_dict = {}
+with torch.no_grad():
+    for idx, inputs in enumerate(ax_dataloader):
+        inputs = inputs.to(device)
+        layer_outputs = []
+        hooks = []
+        for decoder_layer in model.model.layers[1:-1]:
+            hook = decoder_layer.mlp.gate.register_forward_hook(
+                get_layer_output
+            )
+            hooks.append(hook)
 
-#         result = model.generate(**inputs.to(model.device), max_new_tokens=1)
-#         full_expert_dict[idx] = layer_outputs
+        result = model.generate(**inputs.to(model.device), max_new_tokens=1)
+        full_expert_dict[idx] = layer_outputs
 
-#         for hook in hooks:
-#             hook.remove()
+        for hook in hooks:
+            hook.remove()
 
 
 
-# # with open(
-# #     f"/scratch/zx22/zijie/deepseek/eval_raw/resutls/raw/mmlu/{output_name}.json", "w"
-# # ) as fw:
-# #     json.dump(full_expert_dict, fw, indent=4)
+with open(
+    f"/scratch/zx22/zijie/deepseek/eval_raw/resutls/raw/mmlu/{output_name}.json", "w"
+) as fw:
+    json.dump(full_expert_dict, fw, indent=4)
 
 """
 CUDA_VISIBLE_DEVICES=7 nohup python eval_qd_model.py piqa none test 3 --task_idx 0 > ./log/raw/piqa.lb 2>&1 &
